@@ -1,0 +1,119 @@
+﻿教务管理系统需求和设计文档
+
+需求:
+设计一款教务管理系统,实现如下功能:
+1、此教务管理系统面向三种身份，学生、教职工、系统管理员
+2、要有登录界面，在登录界面能根据不同身份自动选择登录入口
+3、教职工凭借工号和密码登录,学生凭借学号和密码登录,系统管理员设置特定帐号和密码
+4、教职工	
+	（1）教职工基本属性：姓名 性别 出生日期 职称 工资 工号 登录密码
+	（2）教职工的功能：修改个人信息、查看个人信息、浏览高级/低级消息、申请发布低级消息、管理自己发布的低级消息
+5、学生
+	（1）学生的基本属性：姓名 性别 出生日期 学院 班主任 专业 学号 登录密码 级段
+	（2）学生的功能：修改个人信息、查看个人信息、浏览二级消息
+6、系统管理员
+	（1）系统管理员的基本属性：帐号  登录密码
+	（2）系统管理员的功能：注册教职工、注册学生、管理所有教职工\学生信息、发布高级级消息、管理所有消息、审核低级消息发布申请，初始化教职工和学生密码
+	
+简单设计：
+1、在MySQL数据库中创建数据库：test
+2、创建表：LoginAccount  StudentInfo  TeacherInfo  AllMessage   DefaultPassword  PositionList
+3、LoginAccount：Id Account  Password	AccountLevel
+		Id是账户序号
+		Account对于系统管理员是帐号，对于教职工是工号，对于学生是学号
+		Password密码
+		AccountLevel账户级别 0系统管理员  1教职工  2学生
+4、StudentInfo: Id Name Gender  Birth  Academy  TeacherNo  Major  StudentNo(长度固定为12)   EntryDate
+		TeacherId: 班主任的工号
+		EntryDate：入学时间
+5、TeacherInfo：Id Name Gender  Birth  PositionNo  Salary  TeacherNo(长度固定为5) EntryDate
+		PositionNo: 职务编号
+		EntryDate: 入职时间
+6、AllMessage：Id MsgLevel SenderNo SenderName SendTime Title Content  Statu
+		Statu消息状态  wait等待审核  pass审核通过  fail审核未通过
+		MsgLevel	0高级消息		1低级消息
+7、登录界面：
+	（1）登录入口设置为三个：管理员入口  教职工入口  学生入口
+	（2）在登录时，检验密码和账户是否匹配，然后再检验账户级别和所选登录入口是否匹配，都匹配则登录成功，反之，登录失败
+8、学生界面：
+	（1）设置功能菜单：个人信息<查看，修改>  消息
+9、教职工界面：
+	（1）设置功能菜单：个人信息<查看，修改>  消息<消息列表，发布消息，我的消息<删除> >
+10、管理员界面：
+	（1）设置功能菜单：教职工<浏览，注册，修改，删除，初始化密码>  学生<浏览，注册，修改，删除，初始化密码> 消息<消息列表，发布消息，审核消息，删除消息>
+11、DefaultPassword：Id  AccountLevel  Password
+	各个级别的初始化密码
+12、PositionList：Id PositionNo	PositionName
+	职务列表，PositionNo职务编号  PositionName职务名称
+	
+类设计：
+1、class Login
+	def __init__(self,conn)						构造,conn连接数据库
+	def MainFunc(self)							主要执行函数
+	def CheckAccount(self)						检查账户
+	def LoginSurface(self,info)					登录界面，info相关信息[错误信息]
+	def GetLoginAccount(self)					获取登录的帐号和密码和权限
+	def Quit(self)								退出
+	
+2、class Student
+	def __init__(self,conn,account,passwd)		构造,conn连接数据库,account当前学生的帐号
+	def MainFunc(self)							主要执行函数
+	def PersonalInfo(self)						个人信息
+	def ChangePersonalInfo(self)				修改个人信息
+	def OperatMessage(self)						操作消息
+	def	MessageList(self)						查看消息列表
+	def MessageInfo(self,MsgNo)					查看详细消息, No消息编号
+	def Quit(self)								退出
+	def MainSurface(self,info)					主界面
+	def MessageSurface(self,info)				消息界面
+	def PersonalInfoSurface(self,info)			个人信息界面
+	
+3、class Teacher
+	def __init__(self,conn,account,passwd)		构造,conn连接数据库,account当前教职工帐号
+	def MainFunc(self)							主要执行函数
+	def OperatePersonalInfo(self)				操作个人信息
+	def	ChangePersonalInfo(self)				修改个人信息
+	def	MessageList(self)						查看消息列表
+	def MessageInfo(self,MsgNo)					查看详细消息, MsgNo消息编号
+	def CreateMessage(self)						发布消息
+	def OperateMessage(self)					操作个人消息
+	def PersonalMessage(self)					查看个人消息
+	def DeleteMessage(self)						删除个人消息
+	def MainSurface(self,info)					主界面
+	def PersonalInfoSurface(self,info)			个人信息界面
+	def MessageSurface(self,info)				消息界面
+	def PersonalMessageSurface(self,info)		个人消息界面
+	
+4、class SystemManager
+	def __init__(self,conn,account,pw)			构造,conn连接数据库
+	def MainFunc(self)							主要执行函数								
+	def OperatTeacher(self)						操作教职工
+	def ScanTeacherInfo(self)				    浏览教职工消息
+	def RegTeacher(self)						注册教职工
+	def ChangeTeacherInfo(self)					修改教职工信息
+	def InitTeacherPassword(self)				初始化教职工密码
+	def	DeleteTeacher(self,TeacherNo)			删除教职工信息
+	def GetPositionInfo(self)					查询职位编号对应信息
+	def OperatStudent(self)						操作学生
+	def ScanStudentInfo(self)					浏览学生消息
+	def RegStudent(self)						注册学生
+	def ChangeStudentInfo(self,StudentNo)		修改学生信息
+	def InitStudentPassword(self,StudentNo)		初始化学生密码
+	def	DeleteStudent(self,StudentNo)			删除学生信息
+	def OperatMessage(self)						操作消息
+	def MessageList(self)						查看消息列表
+	def MessageInfo(self,MsgNo)					消息详细信息
+	def CreateMessage(self)						发布消息
+	def DeleteMessage(self,MsgNo)				删除消息
+	def CheckMessage(self)						审核消息
+	def MessageInfo(self,MsgNo)					查看详细消息
+	def WaitMessageSurface(self,info)			审核消息界面
+	def MainSurface(self,info)					主界面
+	def StudentInfoSurface(self,info)			学生信息界面
+	def TeacherInfoSurface(self,info)			教职工信息界面
+	def MessageSurface(self,info)				消息列表界面
+	
+	
+
+
+

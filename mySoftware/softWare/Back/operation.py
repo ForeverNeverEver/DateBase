@@ -9,36 +9,36 @@ T_INS_T = Template("""INSERT INTO # 学生插入语句模板
         $tableName(教师号, 姓名, 性别, 民族, 生日, 家庭住址, 电话, 职称, 学历)
         VALUES ($ID, $Name, $Gender, $nation, $birthdate, $local, $PhoneNumber, $zc, $xl)""")
 
-ins_dict = {'tableName': str, 'ID': str, 'Name': str, 'Gender': str,
-            'nation': str, 'birthdate': str, 'local': str, 'Phone': str}
+ins_dict = {'tableName': None, 'ID': None, 'Name': None, 'Gender': None,
+            'nation': None, 'birthdate': None, 'local': None, 'Phone': None}
 
 T_DEL_S = Template("""DELETE FROM # 删除语句模板
-$tableName WHERE 姓名 = $name AND 学号 = $ID;""")
+$tableName WHERE 姓名 = $name AND 学号 = $ID""")
 
 T_DEL_T = Template("""DELETE FROM # 删除语句模板
-$tableName WHERE 姓名 = $name AND 教师号 = $ID;""")
+$tableName WHERE 姓名 = $name AND 教师号 = $ID""")
 
-del_dict = {'tableName': str, 'name': str, 'ID': str}
+del_dict = {'tableName': None, 'name': None, 'ID': None}
 
 T_SEL = Template("""SELECT $column_name # 查询语句模板
-                    FROM $tableName;""")
+                    FROM $tableName""")
 
-sel_dict = {'column_name': str, 'tableName': str}
+sel_dict = {'column_name': None, 'tableName': None}
 
 T_UPD = Template("""UPDATE $tableName
                     SET $column=$value
-                    WHERE $key=$key_value;""")
+                    WHERE $key=$key_value""")
 
-upd_dict = {'tableName': str, 'column': str, 'value': str, 'key': str, 'key_value': str}
+upd_dict = {'tableName': None, 'column': None, 'value': None, 'key': None, 'key_value': None}
 
 Tip_input = Template("请输入 $all")
 
 
 def Connect(op: dict, statement):    # 链接数据库
     # 获取操作角色
-    password = input("请输入数据库密码")
+    # password = input("请输入数据库密码")
     try:    # 打开数据库连接
-        connect = MySQLdb.connect('localhost', 'root', password, 'JWGL', charset='utf8')
+        connect = MySQLdb.connect('localhost', 'root', 'MlwithYx0109', 'JWGL', charset='utf8')
         # 使用cursor()方法获取操作游标
         cursor = connect.cursor()
         # 执行sql语句
@@ -55,8 +55,8 @@ def Connect(op: dict, statement):    # 链接数据库
     return final
 
 
-def Insert(role: dict, op: dict = ins_dict):     # 增
-    for item in op.keys():
+def Insert(role: str, op: dict = ins_dict):     # 增
+    for item in op():
         value = input(Tip_input.substitute(all=item))
         op.update({item: value})
     Connect(op, role)
@@ -64,14 +64,14 @@ def Insert(role: dict, op: dict = ins_dict):     # 增
 
 def Delete(role: str, op: dict = del_dict):      # 删
     print("现在开始删除记录")
-    for item in op.keys():
+    for item in op():
         value = input(Tip_input.substitute(all=item))
         op.update({item: value})
     Connect(op, role)
 
 
 def Select(op: dict = sel_dict):       # 查
-    for item in op.keys():
+    for item in op:
         value = input(Tip_input.substitute(all=item))
         op.update({item: value})
     Connect(op, T_SEL)

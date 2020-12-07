@@ -2,9 +2,8 @@ import MySQLdb
 
 
 def setUpDB():
-    user = input("请输入数据库用户名")
-    password = input("请输入数据库密码")
-    conn = MySQLdb.connect("localhost", user, password, "JWGL", charset='utf8')    # 打开数据库链接
+    # Tpassword = input("请输入数据库密码")
+    conn = MySQLdb.connect("localhost", 'root', 'MlwithYx0109', "JWGL", charset='utf8')    # 打开数据库链接
     cursor = conn.cursor()    # 开启游标
     with open('setUp.sql', 'r', encoding='utf-8') as source:      # 打开文件命名为source
         sql_list = source.read().split(';')[:-1]

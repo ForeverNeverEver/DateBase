@@ -71,7 +71,7 @@ create table if not exists 选课(
     院系教学 varchar(5));
 create table if not exists 专业(
     专业代号 varchar(10) primary key ,
-    名称 varchar(5))
+    名称 varchar(5));
 create table if not exists 用户权限(
     用户名 varchar(10) primary key ,
-    密码 varchar(20))
+    密码 varchar(40));
